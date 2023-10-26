@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-from collections import OrderedDict
-from typing import Iterator, Sequence, overload
-from typing_extensions import TypeVar
-from torch import Tensor, nn
-from torch._jit_internal import _copy_to_script_wrapper
-
-from .types import Module
 import functools
 import operator
 import typing
-from typing import Callable, Generic, Tuple, overload
-from torch import Tensor, nn
-from typing_extensions import Concatenate, ParamSpec, TypeVar, TypeVarTuple, Unpack
-from .types import Module, ModuleType
+from collections import OrderedDict
+from typing import Callable, Generic, Iterator, Self, Sequence, Tuple, overload
+
 import torch
+from torch import Tensor, nn
+from torch._jit_internal import _copy_to_script_wrapper
+from typing_extensions import Concatenate, ParamSpec, TypeVar, TypeVarTuple, Unpack
+
+from .types import Module, ModuleType
 
 P = ParamSpec("P")
 R = ParamSpec("R")
@@ -66,15 +63,15 @@ class Sequential(nn.Sequential, Sequence[ModuleType]):
         ...
 
     @overload
-    def __getitem__(self, idx: slice) -> Sequential[ModuleType]:
+    def __getitem__(self, idx: slice) -> Self:
         ...
 
     @_copy_to_script_wrapper
-    def __getitem__(self, idx: int | slice) -> Sequential | ModuleType:
+    def __getitem__(self, idx: int | slice) -> Self | ModuleType:
         if isinstance(idx, slice):
             # NOTE: Fixing this here, subclass constructors shouldn't be called on getitem with
             # slice.
-            return Sequential(OrderedDict(list(self._modules.items())[idx]))
+            return type(self)(OrderedDict(list(self._modules.items())[idx]))
         else:
             return self._get_item_by_idx(self._modules.values(), idx)
 
@@ -86,6 +83,8 @@ class Sequential(nn.Sequential, Sequence[ModuleType]):
         return super().__setitem__(idx, module)
 
     def forward(self, *args, **kwargs):
+        # Slightly modified from torch.nn.Sequential: *args and **kwargs can now be passed and are
+        # sent to the first module.
         out = None
         for i, module in enumerate(self):
             if i == 0:

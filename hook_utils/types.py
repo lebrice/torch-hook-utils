@@ -1,6 +1,7 @@
-from torch import nn, Tensor
 import typing
-from typing import ParamSpec, Iterable, Protocol
+from typing import Iterable, ParamSpec, Protocol
+
+from torch import Tensor, nn
 from typing_extensions import TypeVar
 
 T = TypeVar("T", default=Tensor)

@@ -1,9 +1,12 @@
 from __future__ import annotations
+
 import functools
-from typing import Any, Generator, Mapping, Union
-from torch import nn, Tensor
 from contextlib import contextmanager
+from typing import Any, Generator, Mapping, Union
+
+from torch import Tensor, nn
 from torch.utils.hooks import RemovableHandle
+
 from .types import named_modules_of_type
 
 _MaxPoolLayer = Union[nn.modules.pooling._MaxPoolNd, nn.modules.pooling._AdaptiveMaxPoolNd]
