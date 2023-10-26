@@ -2,9 +2,8 @@ import torch
 import torch.distributions as dist
 from torch import nn
 
-from torch_hook_utils import get_layer_inputs
+from torch_hook_utils import get_layer_inputs, named_modules_of_type
 from torch_hook_utils.layers import Lambda, Sample, Sequential
-from torch_hook_utils.types import named_modules_of_type
 
 model = Sequential(
     nn.Flatten(),

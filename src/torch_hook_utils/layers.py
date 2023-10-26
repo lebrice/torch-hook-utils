@@ -11,6 +11,7 @@ from torch import Tensor, nn
 from torch._jit_internal import _copy_to_script_wrapper
 from typing_extensions import Concatenate, ParamSpec, TypeVar, TypeVarTuple, Unpack
 
+
 from .types import Module, ModuleType
 
 P = ParamSpec("P")
@@ -95,7 +96,7 @@ class Sequential(nn.Sequential, Sequence[ModuleType]):
         return out
 
 
-class Lambda(nn.Module, Generic[OutT]):
+class Lambda(nn.Module, Generic[OutT], Module[..., OutT]):
     """A simple nn.Module wrapping a function.
 
     Any positional or keyword arguments passed to the constructor are pre-bound to the function

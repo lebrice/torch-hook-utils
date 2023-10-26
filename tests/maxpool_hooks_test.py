@@ -8,7 +8,49 @@ import torch
 import torch.testing
 from torch import Tensor, nn
 
-from .maxpool_hooks import save_maxpool_indices, use_indices_in_maxunpool
+from torch_hook_utils.maxpool_hooks import save_maxpool_indices, use_indices_in_maxunpool
+
+
+def test_maxpool_indices_example():
+    encoder = nn.Sequential(
+        OrderedDict(pool=nn.MaxPool2d(kernel_size=2)),
+    )
+    with save_maxpool_indices(encoder) as maxpool_indices:
+        encoder_output = encoder(
+            torch.as_tensor(
+                [
+                    [
+                        [1.0, 2.0],
+                        [3.0, 4.0],
+                    ]
+                ]
+            )
+        )
+    torch.testing.assert_close(
+        maxpool_indices,
+        {
+            "pool": torch.as_tensor([[[3]]]),
+        },
+    )
+    torch.testing.assert_close(encoder_output, torch.as_tensor([[[4.0]]]))
+
+    decoder = nn.Sequential(
+        OrderedDict(pool=nn.MaxUnpool2d(kernel_size=2)),
+    )
+    with use_indices_in_maxunpool(decoder, maxpool_indices):
+        decoder_output = decoder(encoder_output)
+
+    torch.testing.assert_close(
+        decoder_output,
+        torch.as_tensor(
+            [
+                [
+                    [0.0, 0.0],
+                    [0.0, 4.0],
+                ]
+            ]
+        ),
+    )
 
 
 class Args(NamedTuple):
