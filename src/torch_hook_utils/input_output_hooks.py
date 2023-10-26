@@ -2,20 +2,20 @@ from __future__ import annotations
 
 import contextlib
 from functools import partial
+import inspect
 from typing import Any, Generator, Iterable
 
 from torch import Tensor, nn
 from torch.utils.hooks import RemovableHandle
-from typing_extensions import Concatenate
+from typing_extensions import Concatenate, ParamSpec, TypeVarTuple, Unpack
 
 from .types import Module, OutT, T
 
 
 @contextlib.contextmanager
 def get_layer_inputs(
-    layers: Module[[T], OutT] | Iterable[tuple[str, Module[[T], OutT]]]
+    named_layers: Iterable[tuple[str, Module[[T], OutT]]]
 ) -> Generator[dict[str, T], None, None]:
-    named_layers = layers.named_modules() if isinstance(layers, nn.Module) else layers
     layer_inputs: dict[str, T] = {}
     hook_handles: list[RemovableHandle] = []
 
@@ -37,9 +37,8 @@ def get_layer_inputs(
 
 @contextlib.contextmanager
 def get_layer_outputs(
-    layers: Module[..., OutT] | Iterable[tuple[str, Module[..., OutT]]]
+    named_layers: Iterable[tuple[str, Module[..., OutT]]]
 ) -> Generator[dict[str, OutT], None, None]:
-    named_layers = layers.named_modules() if isinstance(layers, nn.Module) else layers
     layer_outputs: dict[str, OutT] = {}
     hook_handles: list[RemovableHandle] = []
 
@@ -105,6 +104,7 @@ def replace_layer_inputs(
     """Context that temporarily makes these layers use these inputs in their forward pass."""
     handles: list[RemovableHandle] = []
     for name, layer in network_layers:
+        assert isinstance(layer, nn.Module)
         handle = layer.register_forward_pre_hook(
             partial(_replace_layer_input_hook, name, inputs_to_use)
         )
