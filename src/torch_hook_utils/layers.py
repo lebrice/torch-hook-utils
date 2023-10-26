@@ -164,3 +164,6 @@ class Sample(Lambda, Module[[torch.distributions.Distribution], Tensor]):
 
     if typing.TYPE_CHECKING:
         __call__ = forward
+
+
+bob = Sample(differentiable=True).__call__("1.23")

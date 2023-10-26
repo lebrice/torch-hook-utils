@@ -1,0 +1,18 @@
+[project]
+name = "torch-hook-utils"
+version = "0.0.1"
+description = "Small library of PyTorch hook utility functions"
+authors = [
+    {name = "Fabrice Normandin", email = "normandf@mila.quebec"},
+]
+dependencies = [
+    "torch>=2.1.0",
+    "typing-extensions>=4.8.0",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"

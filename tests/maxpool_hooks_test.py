@@ -1,11 +1,14 @@
 from __future__ import annotations
+
 from collections import OrderedDict
 from typing import NamedTuple
+
 import pytest
-from .maxpool_hooks import save_maxpool_indices, use_indices_in_maxunpool
 import torch
-from torch import nn, Tensor
 import torch.testing
+from torch import Tensor, nn
+
+from .maxpool_hooks import save_maxpool_indices, use_indices_in_maxunpool
 
 
 class Args(NamedTuple):
